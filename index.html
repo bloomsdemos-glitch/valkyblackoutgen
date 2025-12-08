@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Блекаут-Генератор 11.1</title>
+    <title>Блекаут-Генератор 11.2</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
@@ -15,8 +15,8 @@
 
 ```
         --chart-bg: #ffffff;
-        --light-bg: #f3f4f6;
-        --light-text: #000000;
+        --light-bg: #fbbf24;
+        --light-text: #ffffff;
         --dark-bg: #000000;
         --dark-text: #ffffff;
     }
@@ -70,13 +70,13 @@
 
     #captureTarget {
         background-color: var(--chart-bg);
-        padding: 30px;
+        padding: 35px;
         border-radius: var(--radius);
         box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         position: absolute; 
         left: -9999px; 
         top: 0; 
-        width: 500px; 
+        width: 540px; 
         box-sizing: border-box;
     }
 
@@ -84,10 +84,10 @@
         display: flex; 
         justify-content: space-between; 
         align-items: flex-start; 
-        margin-bottom: 25px; 
+        margin-bottom: 30px; 
     }
     .header-title { 
-        font-size: 24px; 
+        font-size: 26px; 
         font-weight: 900; 
         text-transform: uppercase; 
         line-height: 1.1; 
@@ -96,10 +96,10 @@
         font-size: 14px; 
         color: #6b7280; 
         font-weight: 500; 
-        margin-top: 5px; 
+        margin-top: 6px; 
     }
     .logo-fixed { 
-        height: 50px; 
+        height: 55px; 
         width: auto; 
         object-fit: contain; 
     }
@@ -107,24 +107,19 @@
     .grid-container {
         display: grid; 
         grid-template-columns: repeat(4, 1fr); 
-        gap: 12px; 
-        margin-bottom: 20px;
+        gap: 14px; 
+        margin-bottom: 25px;
     }
 
     .hour-box {
         position: relative;
-        aspect-ratio: 1.6/1;
-        border-radius: 16px;
+        aspect-ratio: 1.5/1;
+        border-radius: 18px;
         overflow: hidden; 
         font-weight: 700;
-        font-size: 20px;
+        font-size: 22px;
         background-color: var(--light-bg);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-
-    /* Жовте обведення для плиток зі світлом */
-    .hour-box.has-light {
-        border: 2px solid #eab308;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
     }
 
     .layer {
@@ -134,9 +129,12 @@
         width: 100%; 
         height: 100%;
         display: flex; 
+        flex-direction: row;
         align-items: center; 
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
+        padding: 0 8px;
+        box-sizing: border-box;
     }
 
     .layer-light {
@@ -152,8 +150,8 @@
     }
 
     .icon-svg {
-        width: 18px; 
-        height: 18px;
+        width: 20px; 
+        height: 20px;
         display: block;
         flex-shrink: 0;
     }
@@ -161,26 +159,27 @@
     .time-text {
         display: block;
         white-space: nowrap;
+        line-height: 1;
     }
 
     .footer-info {
         display: flex; 
         align-items: center; 
         gap: 8px;
-        margin-top: 5px; 
-        padding-top: 15px;
+        margin-top: 8px; 
+        padding-top: 18px;
         border-top: 1px solid #f3f4f6;
         color: #6b7280;
     }
     .info-icon { 
-        width: 18px; 
-        height: 18px; 
+        width: 20px; 
+        height: 20px; 
         flex-shrink: 0; 
     }
     .footer-text { 
         font-size: 13px; 
         font-weight: 500; 
-        line-height: 1.2; 
+        line-height: 1.3; 
     }
 
     #outputContainer {
@@ -216,7 +215,7 @@
 ```
 <div class="app-container">
     <div class="card">
-        <h2 style="margin:0 0 15px 0; color:var(--text-main);">Генератор 11.1</h2>
+        <h2 style="margin:0 0 15px 0; color:var(--text-main);">Генератор 11.2</h2>
         <textarea id="rawText" placeholder="Встав текст графіку..."></textarea>
         <div class="btn-group">
             <button class="btn-primary" style="padding: 16px; font-size: 16px;" onclick="processDataAndGenerate()">⚡ Створити пост</button>
@@ -258,10 +257,10 @@
 </div>
 
 <script>
-    // Іконка лампочки (жовта для світла)
-    const iconBulb = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1.2 1.5-2.5 1.5-4a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 1.4.5 2.7 1.5 4 .7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
+    // Іконка лампочки (біла для жовтого фону)
+    const iconBulb = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1.2 1.5-2.5 1.5-4a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 1.4.5 2.7 1.5 4 .7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
     
-    // Іконка zap-off (для вимкнення світла, червона)
+    // Іконка zap-off (червона для чорного фону)
     const iconZapOff = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="12.41 6.75 13 2 10.57 4.92"/><polyline points="18.57 12.91 21 10 15.66 10"/><polyline points="8 8 3 14 12 14 11 22 16 16"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
 
     const grid = document.getElementById('grid');
@@ -283,12 +282,12 @@
             div.className = 'hour-box';
             const timeStr = i.toString().padStart(2, '0') + ":00";
             
-            // Світлий шар (жовта іконка + чорний текст)
+            // Світлий шар (біла іконка + білий текст на жовтому)
             const layerLight = document.createElement('div');
             layerLight.className = 'layer layer-light';
             layerLight.innerHTML = `${iconBulb}<span class="time-text">${timeStr}</span>`;
             
-            // Темний шар (червона іконка + білий текст)
+            // Темний шар (червона іконка + білий текст на чорному)
             const layerDark = document.createElement('div');
             layerDark.className = 'layer layer-dark';
             layerDark.innerHTML = `${iconZapOff}<span class="time-text">${timeStr}</span>`;
@@ -305,34 +304,30 @@
         const status = hoursStatus[idx];
         const darkLayer = div.querySelector('.layer-dark');
 
-        // Скидаємо стилі
+        // Скидаємо
         darkLayer.style.display = 'none';
         darkLayer.style.clipPath = 'none';
-        div.classList.remove('has-light');
 
         if (status === 'on') {
-            // Тільки світлий шар (є світло)
+            // Повністю світло (жовта плитка)
             darkLayer.style.display = 'none';
-            div.classList.add('has-light');
         } 
         else if (status === 'off') {
-            // Тільки темний шар (немає світла)
+            // Повністю темно (чорна плитка)
             darkLayer.style.display = 'flex';
             darkLayer.style.clipPath = 'none';
         }
         else if (status === 'start-half') {
-            // Світло -> Темно (00:00-00:30 світло, 00:30-01:00 темно)
-            // Темний шар зправа
+            // Перша половина світло, друга темно
+            // Темний шар показуємо тільки справа (50%-100%)
             darkLayer.style.display = 'flex';
             darkLayer.style.clipPath = 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)';
-            div.classList.add('has-light');
         }
         else if (status === 'end-half') {
-            // Темно -> Світло (00:00-00:30 темно, 00:30-01:00 світло)
-            // Темний шар зліва
+            // Перша половина темно, друга світло
+            // Темний шар показуємо тільки зліва (0%-50%)
             darkLayer.style.display = 'flex';
             darkLayer.style.clipPath = 'polygon(0 0, 50% 0, 50% 100%, 0 100%)';
-            div.classList.add('has-light');
         }
     }
 
@@ -379,8 +374,11 @@
     }
 
     function parseTime(t) { 
-        const [h, m] = t.replace(/[^\d:]/g, '').split(':').map(Number); 
-        return { h: h, m: m || 0 }; 
+        const cleaned = t.replace(/[^\d:]/g, '');
+        const parts = cleaned.split(':');
+        const h = parseInt(parts[0]) || 0;
+        const m = parts.length > 1 ? parseInt(parts[1]) : 0;
+        return { h: h, m: m }; 
     }
 
     function getClockEmoji(t) { 
@@ -389,23 +387,47 @@
     }
     
     function applyRange(start, end) {
-        let s = start.h * 60 + start.m; 
-        let e = end.h * 60 + end.m;
-        if (e === 0 && end.h === 0) e = 1440; 
-        if (e < s) e = 1440; 
+        let startMinutes = start.h * 60 + start.m;
+        let endMinutes = end.h * 60 + end.m;
         
+        // Якщо кінець 00:00, це означає 24:00 (кінець дня)
+        if (endMinutes === 0 && end.h === 0) {
+            endMinutes = 1440;
+        }
+        
+        // Якщо кінець менший за початок, значить переходить через північ
+        if (endMinutes <= startMinutes) {
+            endMinutes = 1440;
+        }
+        
+        // Проходимо по кожній годині
         for (let h = 0; h < 24; h++) {
-            let hs = h * 60; 
-            let he = (h + 1) * 60;
+            const hourStart = h * 60;
+            const hourEnd = (h + 1) * 60;
             
-            if (hs >= s && he <= e) {
+            // Перевіряємо чи година повністю в діапазоні відключення
+            if (startMinutes <= hourStart && endMinutes >= hourEnd) {
                 hoursStatus[h] = 'off';
             }
-            else if (s > hs && s < he) {
-                hoursStatus[h] = start.m >= 30 ? 'start-half' : 'off';
+            // Перевіряємо чи відключення починається в цій годині
+            else if (startMinutes > hourStart && startMinutes < hourEnd) {
+                // Якщо починається після :30, то перша половина світла
+                if (start.m >= 30) {
+                    hoursStatus[h] = 'start-half';
+                } else {
+                    // Якщо починається до :30, вся година темна (бо більша частина темна)
+                    hoursStatus[h] = 'off';
+                }
             }
-            else if (e > hs && e < he) {
-                hoursStatus[h] = end.m >= 30 ? 'end-half' : 'on';
+            // Перевіряємо чи відключення закінчується в цій годині
+            else if (endMinutes > hourStart && endMinutes < hourEnd) {
+                // Якщо закінчується після :30, то вся година темна
+                if (end.m > 30) {
+                    hoursStatus[h] = 'off';
+                } else {
+                    // Якщо закінчується до :30, то перша половина темна
+                    hoursStatus[h] = 'end-half';
+                }
             }
         }
     }
