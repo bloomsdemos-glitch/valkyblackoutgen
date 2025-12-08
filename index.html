@@ -387,47 +387,23 @@
     }
     
     function applyRange(start, end) {
-        let startMinutes = start.h * 60 + start.m;
-        let endMinutes = end.h * 60 + end.m;
+        let s = start.h * 60 + start.m;
+        let e = end.h * 60 + end.m;
+        if (e === 0 && end.h === 0) e = 1440;
+        if (e < s) e = 1440;
         
-        // Якщо кінець 00:00, це означає 24:00 (кінець дня)
-        if (endMinutes === 0 && end.h === 0) {
-            endMinutes = 1440;
-        }
-        
-        // Якщо кінець менший за початок, значить переходить через північ
-        if (endMinutes <= startMinutes) {
-            endMinutes = 1440;
-        }
-        
-        // Проходимо по кожній годині
         for (let h = 0; h < 24; h++) {
-            const hourStart = h * 60;
-            const hourEnd = (h + 1) * 60;
+            let hs = h * 60;
+            let he = (h + 1) * 60;
             
-            // Перевіряємо чи година повністю в діапазоні відключення
-            if (startMinutes <= hourStart && endMinutes >= hourEnd) {
+            if (hs >= s && he <= e) {
                 hoursStatus[h] = 'off';
             }
-            // Перевіряємо чи відключення починається в цій годині
-            else if (startMinutes > hourStart && startMinutes < hourEnd) {
-                // Якщо починається після :30, то перша половина світла
-                if (start.m >= 30) {
-                    hoursStatus[h] = 'start-half';
-                } else {
-                    // Якщо починається до :30, вся година темна (бо більша частина темна)
-                    hoursStatus[h] = 'off';
-                }
+            else if (s > hs && s < he) {
+                hoursStatus[h] = start.m >= 30 ? 'start-half' : 'off';
             }
-            // Перевіряємо чи відключення закінчується в цій годині
-            else if (endMinutes > hourStart && endMinutes < hourEnd) {
-                // Якщо закінчується після :30, то вся година темна
-                if (end.m > 30) {
-                    hoursStatus[h] = 'off';
-                } else {
-                    // Якщо закінчується до :30, то перша половина темна
-                    hoursStatus[h] = 'end-half';
-                }
+            else if (e > hs && e < he) {
+                hoursStatus[h] = end.m >= 30 ? 'end-half' : 'on';
             }
         }
     }
