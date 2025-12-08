@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Блекаут-Генератор 9.0 (Insta-Gen)</title>
+    <title>Блекаут-Генератор 10.0 (Final Cut)</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
             --bg-app: #f2f2f7;
             --card-bg: #ffffff;
-            --text-main: #000000;
-            --radius: 20px;
+            --text-main: #111827;
+            --radius: 24px; /* Ще більше скруглення */
             
-            /* === КОЛЬОРИ ГРАФІКУ === */
-            --chart-bg: #ffffff;       /* Фон картинки (білий) */
-            --tile-bg-on: #f3f4f6;     /* Світло-сірий для ON */
-            --tile-bg-off: #000000;    /* DIGITAL BLACK для OFF */
+            /* === КОЛЬОРИ === */
+            --chart-bg: #ffffff;
             
-            --text-on: #000000;        /* Чорний текст на світлому */
-            --text-off: #ffffff;       /* Білий текст на чорному */
+            /* Світло Є (ON) */
+            --tile-bg-on: #f3f4f6;
+            --text-on: #111827;     /* Темний текст */
+            --border-on: #eab308;   /* Жовта рамка */
             
-            --icon-on: #ca8a04;        /* Темно-жовтий */
-            --icon-off: #6b7280;       /* Сірий */
+            /* Світла НЕМА (OFF) */
+            --tile-bg-off: #000000; /* Digital Black */
+            --text-off: #ffffff;    /* Білий текст */
+            
+            /* Іконки (тепер успадковують колір тексту, щоб бути адаптивними) */
+            --icon-size: 20px;
         }
 
         body {
@@ -37,7 +41,7 @@
 
         .app-container {
             width: 100%;
-            max-width: 500px; /* ЗБІЛЬШЕНО ШИРИНУ */
+            max-width: 540px; /* Ще ширше для краси */
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -46,7 +50,7 @@
         .card {
             background: var(--card-bg);
             padding: 20px;
-            border-radius: var(--radius);
+            border-radius: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
@@ -66,110 +70,127 @@
         .btn-group { display: flex; gap: 10px; margin-top: 15px; }
         button {
             flex: 1;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
             cursor: pointer;
             transition: 0.2s;
         }
         .btn-primary { background: #007aff; color: white; }
         .btn-secondary { background: #e5e7eb; color: var(--text-main); }
 
-        /* === ЗОНА ГЕНЕРАЦІЇ (Прихована, використовується для створення скріна) === */
+        /* === ЗОНА ГЕНЕРАЦІЇ === */
         #captureTarget {
             background-color: var(--chart-bg);
-            padding: 30px; /* Більше відступів */
-            border-radius: var(--radius);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            /* Ми не ховаємо її через display:none, бо html2canvas тоді не спрацює.
-               Ми її просто не показуємо юзеру в звичайному потоці. */
+            padding: 40px; /* Більше повітря навколо */
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             position: absolute; 
-            left: -9999px;
-            top: 0;
-            width: 500px; /* Фіксована ширина для рендеру */
+            left: -9999px; top: 0; /* Ховаємо з екрану */
+            width: 600px; /* Фіксована ширина для високої якості */
             box-sizing: border-box;
         }
 
         .header-row {
-            display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 35px;
         }
-        .header-title { font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
-        .header-subtitle { font-size: 14px; color: #6b7280; font-weight: 500; margin-top: 5px; }
-        .logo-fixed { height: 50px; width: auto; object-fit: contain; }
+        .header-title { font-size: 28px; font-weight: 900; text-transform: uppercase; line-height: 1.1; letter-spacing: -0.5px;}
+        .header-subtitle { font-size: 15px; color: #6b7280; font-weight: 500; margin-top: 6px; }
+        .logo-fixed { height: 55px; width: auto; object-fit: contain; }
 
         .grid-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px; /* Більший проміжок */
+            gap: 16px; /* Більші відступи між плитками */
         }
 
-        /* ПЛИТКА ГОДИНИ (БІЛЬША) */
+        /* === ПЛИТКА (Геній інженерії) === */
         .hour-box {
             position: relative;
-            aspect-ratio: 1.6/1;
-            border-radius: 16px; /* Більше закруглення */
+            aspect-ratio: 1.8/1; /* Широкі, красиві */
+            border-radius: var(--radius);
             font-weight: 700;
-            font-size: 20px; /* ЗБІЛЬШЕНО ШРИФТ */
+            font-size: 24px; /* Великий шрифт */
             cursor: pointer;
-            user-select: none;
-            overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden; /* Обрізаємо все зайве */
+            /* border: задається індивідуально */
+            box-sizing: border-box; 
         }
 
-        /* ШАР ФОНУ */
+        /* 1. ШАР ФОНУ (Background Layer) */
         .bg-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 1;
         }
 
-        /* ШАРИ ТЕКСТУ */
-        .split-text {
+        /* 2. ШАРИ КОНТЕНТУ (Content Layers) 
+           Ми дублюємо контент (Іконка + Текст) двічі.
+           Один шар показує ліву частину, інший - праву.
+           Це дозволяє іконці теж змінювати колір наполовину! */
+        
+        .content-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
-            z-index: 3;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px; /* Відступ між іконкою і цифрою */
+            z-index: 2;
         }
-        .text-left { clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%); }
-        .text-right { clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%); }
+        
+        /* Ліва половина контенту (0-50%) */
+        .layer-left { clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%); }
+        
+        /* Права половина контенту (50-100%) */
+        .layer-right { clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%); }
 
-        /* ІКОНКА */
-        .icon-container {
-            position: absolute;
-            top: 8px;  /* Відсунув трохи */
-            right: 8px; /* Відсунув трохи */
-            width: 15px;
-            height: 15px;
-            z-index: 4;
+        /* Стиль іконки всередині шару */
+        .status-icon {
+            width: 22px; height: 22px;
+            display: block;
         }
 
-        /* === СТАНИ === */
+        /* === ЛОГІКА СТАНІВ === */
+
+        /* A. СВІТЛО Є (ON) */
+        .status-on { border: 2px solid var(--border-on); } /* Жовта рамка */
         .status-on .bg-layer { background-color: var(--tile-bg-on); }
-        .status-on .split-text { color: var(--text-on); }
+        .status-on .content-layer { color: var(--text-on); } /* Весь контент темний */
 
-        .status-off { border-color: transparent; }
+        /* B. СВІТЛА НЕМА (OFF) */
+        .status-off { border: 2px solid transparent; }
         .status-off .bg-layer { background-color: var(--tile-bg-off); }
-        .status-off .split-text { color: var(--text-off); }
+        .status-off .content-layer { color: var(--text-off); } /* Весь контент білий */
 
-        .status-start-half { border-color: transparent; }
-        .status-start-half .bg-layer { background: linear-gradient(90deg, var(--tile-bg-on) 50%, var(--tile-bg-off) 50%); }
-        .status-start-half .text-left { color: var(--text-on); }
-        .status-start-half .text-right { color: var(--text-off); }
+        /* C. ВИМИКАЮТЬ (Start Half: Light -> Dark) */
+        .status-start-half { border: 2px solid transparent; } /* Без рамки, бо складно з градієнтом */
+        .status-start-half .bg-layer { 
+            background: linear-gradient(90deg, var(--tile-bg-on) 50%, var(--tile-bg-off) 50%);
+        }
+        /* Ліва частина фону СВІТЛА -> текст ТЕМНИЙ */
+        .status-start-half .layer-left { color: var(--text-on); }
+        /* Права частина фону ТЕМНА -> текст БІЛИЙ */
+        .status-start-half .layer-right { color: var(--text-off); }
 
-        .status-end-half { border-color: transparent; }
-        .status-end-half .bg-layer { background: linear-gradient(90deg, var(--tile-bg-off) 50%, var(--tile-bg-on) 50%); }
-        .status-end-half .text-left { color: var(--text-off); }
-        .status-end-half .text-right { color: var(--text-on); }
+        /* D. ВМИКАЮТЬ (End Half: Dark -> Light) */
+        .status-end-half { border: 2px solid transparent; }
+        .status-end-half .bg-layer { 
+            background: linear-gradient(90deg, var(--tile-bg-off) 50%, var(--tile-bg-on) 50%);
+        }
+        /* Ліва частина фону ТЕМНА -> текст БІЛИЙ */
+        .status-end-half .layer-left { color: var(--text-off); }
+        /* Права частина фону СВІТЛА -> текст ТЕМНИЙ */
+        .status-end-half .layer-right { color: var(--text-on); }
 
 
-        /* БЛОК З ГОТОВОЮ КАРТИНКОЮ */
+        /* Блок результату */
         #outputContainer {
-            display: none; /* Сховано до генерації */
-            background: var(--card-bg); padding: 15px;
-            border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;
+            display: none; background: var(--card-bg); padding: 20px;
+            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;
         }
         #generatedImage { width: 100%; height: auto; border-radius: 12px; display: block; }
-        .output-hint { font-size: 14px; font-weight: 500; color: #6b7280; margin-top: 15px; margin-bottom: 5px;}
+        .output-hint { font-size: 14px; font-weight: 600; color: #6b7280; margin-top: 15px; margin-bottom: 5px;}
         .copy-area { display: none; margin-top: 20px; }
     </style>
 </head>
@@ -177,10 +198,10 @@
 
     <div class="app-container">
         <div class="card">
-            <h2 style="margin:0 0 15px 0; color:var(--text-main);">Генератор 9.0 (Insta-Gen)</h2>
-            <textarea id="rawText" placeholder="Встав сюди простирадло тексту..."></textarea>
+            <h2 style="margin:0 0 15px 0; color:var(--text-main);">Генератор 10.0 (Perfect)</h2>
+            <textarea id="rawText" placeholder="Встав сюди текст графіку..."></textarea>
             <div class="btn-group">
-                <button class="btn-primary" style="padding: 16px; font-size: 16px;" onclick="processDataAndGenerate()">⚡ Створити пост</button>
+                <button class="btn-primary" onclick="processDataAndGenerate()">⚡ Створити пост</button>
                 <button class="btn-secondary" onclick="clearAll()">❌ Скинути</button>
             </div>
             <div id="debug" style="color:red; font-size:12px; margin-top:5px; text-align:center;"></div>
@@ -199,7 +220,7 @@
 
         <div id="outputContainer">
             <img id="generatedImage" src="">
-            <p class="output-hint">☝️ Затисни картинку, щоб скопіювати</p>
+            <p class="output-hint">☝️ Затисни картинку, щоб зберегти</p>
         </div>
 
         <div class="card copy-area" id="copyCard">
@@ -221,23 +242,33 @@
         let hoursStatus = new Array(24).fill('on'); 
         const clocks = ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚'];
 
-        // SVG Іконки
-        const iconOnSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1.2 1.5-2.5 1.5-4a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 1.4.5 2.7 1.5 4 .7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
-        const iconOffSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.8 11.2c.8-.9 1.2-2 1.2-3.2a6 6 0 0 0-9.3-5"/><path d="M2 2l20 20"/><path d="M8.7 11.2c-.8.9-1.2 2-1.2 3.2"/><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 5V2"/><path d="M19 7l2-2"/><path d="M5 7 3 5"/></svg>`;
+        // Іконка (використовуємо currentColor, щоб колір змінювався автоматично)
+        // Це та сама іконка, але fill/stroke залежить від кольору тексту батьківського блоку
+        const iconSvg = `<svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14H12L11 22L21 10H12L13 2Z"/></svg>`;
+        
+        // Для OFF можна іншу, наприклад перекреслену, але ти просив адаптивність. 
+        // Найстильніше - просто блискавка, яка стає білою на чорному.
+        // Якщо хочеш різні іконки, скажи. Поки залишив одну універсальну блискавку.
 
         function initGrid() {
             grid.innerHTML = '';
             for (let i = 0; i < 24; i++) {
                 const div = document.createElement('div');
-                div.className = 'hour-box';
+                div.className = 'hour-box'; // базовий клас
                 const timeStr = i.toString().padStart(2, '0') + ":00";
+                
+                // СТРУКТУРА:
+                // 1. Фон
+                // 2. Лівий шар (Іконка + Текст) - обрізаний
+                // 3. Правий шар (Іконка + Текст) - обрізаний
+                
+                const contentHtml = `${iconSvg} <span>${timeStr}</span>`;
+
                 div.innerHTML = `
                     <div class="bg-layer"></div>
-                    <div class="split-text text-left">${timeStr}</div>
-                    <div class="split-text text-right">${timeStr}</div>
-                    <div class="icon-container"></div>
+                    <div class="content-layer layer-left">${contentHtml}</div>
+                    <div class="content-layer layer-right">${contentHtml}</div>
                 `;
-                // div.onclick = () => cycleState(i); // Ручне редагування вимкнено для швидкості
                 grid.appendChild(div);
             }
             renderAll();
@@ -246,23 +277,16 @@
         function renderSingle(idx) {
             const div = grid.children[idx];
             const status = hoursStatus[idx];
+            // Просто міняємо клас, CSS зробить всю магію з кольорами
             div.className = 'hour-box status-' + status;
-            const iconCont = div.querySelector('.icon-container');
-            
-            if (status === 'on') iconCont.innerHTML = iconOnSvg;
-            else if (status === 'off') iconCont.innerHTML = iconOffSvg;
-            else if (status === 'start-half') iconCont.innerHTML = iconOffSvg; 
-            else if (status === 'end-half') iconCont.innerHTML = iconOnSvg;
         }
 
         function renderAll() { for(let i=0; i<24; i++) renderSingle(i); }
 
-        // === ГОЛОВНА ФУНКЦІЯ (ОБ'ЄДНАНА) ===
         function processDataAndGenerate() {
             const text = document.getElementById('rawText').value;
             debug.textContent = "";
             
-            // 1. Парсинг даних
             const dateRegex = /(\d{1,2})\s+(січня|лютого|березня|квітня|травня|червня|липня|серпня|вересня|жовтня|листопада|грудня)/i;
             const dateMatch = text.match(dateRegex);
             let dateStr = "СЬОГОДНІ";
@@ -288,19 +312,16 @@
             });
 
             renderAll();
-
-            // 2. Підготовка тексту
             resultTextArea.value = `⚡️💡 ГРАФІК ВІДКЛЮЧЕНЬ НА ${dateStr}\n\n${textIntervals.join('\n')}\n\nХарківобленерго`;
             
-            // 3. Генерація картинки (автоматично)
-            generateImageOutput();
-
-            // 4. Показ результатів
+            // Затримка перед скріном, щоб шрифти і стилі точно провантажились
+            setTimeout(generateImageOutput, 100);
             copyCard.style.display = 'block';
         }
 
         function parseTime(t) { const [h, m] = t.replace(/[^\d:]/g, '').split(':').map(Number); return { h: h, m: m || 0 }; }
         function getClockEmoji(t) { let h = parseInt(t.split(':')[0]); return isNaN(h) ? '🕒' : clocks[h % 12]; }
+        
         function applyRange(start, end) {
             let s = start.h * 60 + start.m; let e = end.h * 60 + end.m;
             if (e === 0 && end.h === 0) e = 1440; if (e < s) e = 1440; 
@@ -317,7 +338,7 @@
             hoursStatus.fill('on');
             renderAll();
             copyCard.style.display = 'none';
-            outputContainer.style.display = 'none'; // Ховаємо картинку
+            outputContainer.style.display = 'none';
             dateDisplay.innerHTML = 'ГРАФІК<br>ВІДКЛЮЧЕНЬ';
         }
 
@@ -326,7 +347,6 @@
         }
 
         function generateImageOutput() {
-            // Робимо скрін прихованого елемента
             html2canvas(captureTarget, {
                 scale: 2, 
                 backgroundColor: "#ffffff",
@@ -334,7 +354,7 @@
                 useCORS: true
             }).then(canvas => {
                 generatedImage.src = canvas.toDataURL('image/png');
-                outputContainer.style.display = 'block'; // Показуємо результат
+                outputContainer.style.display = 'block';
             });
         }
 
