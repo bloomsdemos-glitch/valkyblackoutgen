@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Блекаут-Генератор 10.0</title>
+    <title>Блекаут-Генератор 11.0</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
@@ -17,11 +17,9 @@
             
             --light-bg: #f3f4f6;
             --light-text: #000000;
-            --light-icon: #ca8a04; /* Жовта іконка на світлому */
             
             --dark-bg: #000000;
             --dark-text: #ffffff;
-            --dark-icon: #4b5563; /* Сіра іконка на чорному */
         }
 
         body {
@@ -77,37 +75,37 @@
             padding: 30px;
             border-radius: var(--radius);
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            position: absolute; left: -9999px; top: 0; width: 500px; /* Фіксовано для рендеру */
+            position: absolute; left: -9999px; top: 0; width: 500px; 
             box-sizing: border-box;
         }
 
-        /* Шапка */
         .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; }
         .header-title { font-size: 24px; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
         .header-subtitle { font-size: 14px; color: #6b7280; font-weight: 500; margin-top: 5px; }
         .logo-fixed { height: 50px; width: auto; object-fit: contain; }
 
-        /* Сітка */
         .grid-container {
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;
         }
 
-        /* === ГОЛОВНА МАГІЯ: ШАРИ === */
+        /* === ПЛИТКА ЧАСУ === */
         .hour-box {
             position: relative;
             aspect-ratio: 1.6/1;
             border-radius: 16px;
-            overflow: hidden; /* Обрізаємо все, що вилазить */
+            overflow: hidden; 
             font-weight: 700;
             font-size: 20px;
-            cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.05); /* Рамка */
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
-        /* Шар */
+        /* Шар (спільний стиль) */
         .layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; /* Центруємо весь блок (іконка + текст) */
+            gap: 8px; /* Відступ між іконкою і текстом */
             transition: all 0.1s;
         }
 
@@ -120,15 +118,17 @@
         .layer-dark {
             background-color: var(--dark-bg);
             color: var(--dark-text);
-            z-index: 2; /* Зверху */
+            z-index: 2; /* Зверху (але може бути прихованим) */
+            display: none; /* За замовчуванням сховано */
         }
 
-        /* Іконки всередині шарів */
-        .icon-box {
-            position: absolute; top: 8px; right: 8px; width: 16px; height: 16px;
+        /* Іконка (розмір) */
+        .icon-svg {
+            width: 18px; height: 18px;
+            display: block; /* Щоб не було зайвих відступів */
         }
 
-        /* Футер з інфо */
+        /* Футер */
         .footer-info {
             display: flex; align-items: center; gap: 8px;
             margin-top: 5px; padding-top: 15px;
@@ -138,8 +138,7 @@
         .info-icon { width: 18px; height: 18px; flex-shrink: 0; }
         .footer-text { font-size: 13px; font-weight: 500; line-height: 1.2; }
 
-
-        /* БЛОК РЕЗУЛЬТАТІВ */
+        /* Результат */
         #outputContainer {
             display: none; background: var(--card-bg); padding: 15px;
             border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;
@@ -154,7 +153,7 @@
 
     <div class="app-container">
         <div class="card">
-            <h2 style="margin:0 0 15px 0; color:var(--text-main);">Генератор 10.0 (Final)</h2>
+            <h2 style="margin:0 0 15px 0; color:var(--text-main);">Генератор 11.0</h2>
             <textarea id="rawText" placeholder="Встав текст графіку..."></textarea>
             <div class="btn-group">
                 <button class="btn-primary" style="padding: 16px; font-size: 16px;" onclick="processDataAndGenerate()">⚡ Створити пост</button>
@@ -196,12 +195,12 @@
     </div>
 
     <script>
-        // === НАЛАШТУВАННЯ SVG ІКОНОК ===
-        // Лампочка ЖОВТА (для світлого шару)
-        const iconLight = `<svg viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1.2 1.5-2.5 1.5-4a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 1.4.5 2.7 1.5 4 .7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
+        // ІКОНКИ (SVG)
+        // Жовта (для світлого фону)
+        const iconLight = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1.2 1.5-2.5 1.5-4a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 1.4.5 2.7 1.5 4 .7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
         
-        // Лампочка СІРА (для темного шару)
-        const iconDark = `<svg viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%"><path d="M16.8 11.2c.8-.9 1.2-2 1.2-3.2a6 6 0 0 0-9.3-5"/><path d="M2 2l20 20"/><path d="M8.7 11.2c-.8.9-1.2 2-1.2 3.2"/><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 5V2"/><path d="M19 7l2-2"/><path d="M5 7 3 5"/></svg>`;
+        // Сіра (для темного фону)
+        const iconDark = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.8 11.2c.8-.9 1.2-2 1.2-3.2a6 6 0 0 0-9.3-5"/><path d="M2 2l20 20"/><path d="M8.7 11.2c-.8.9-1.2 2-1.2 3.2"/><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 5V2"/><path d="M19 7l2-2"/><path d="M5 7 3 5"/></svg>`;
 
 
         const grid = document.getElementById('grid');
@@ -223,21 +222,19 @@
                 div.className = 'hour-box';
                 const timeStr = i.toString().padStart(2, '0') + ":00";
                 
-                // СТВОРЮЄМО ДВА ШАРИ
-                // 1. Світлий шар (Знизу)
+                // ВАЖЛИВО: Іконка йде ПЕРЕД текстом (зліва)
+                // Шар 1: Світлий (знизу)
                 const layerLight = document.createElement('div');
                 layerLight.className = 'layer layer-light';
-                layerLight.innerHTML = `${timeStr}<div class="icon-box">${iconLight}</div>`;
+                layerLight.innerHTML = `${iconLight}<span>${timeStr}</span>`;
                 
-                // 2. Темний шар (Зверху)
+                // Шар 2: Темний (зверху)
                 const layerDark = document.createElement('div');
                 layerDark.className = 'layer layer-dark';
-                layerDark.innerHTML = `${timeStr}<div class="icon-box">${iconDark}</div>`;
+                layerDark.innerHTML = `${iconDark}<span>${timeStr}</span>`;
 
                 div.appendChild(layerLight);
                 div.appendChild(layerDark);
-                
-                // div.onclick = ... (вимкнено для швидкості)
                 grid.appendChild(div);
             }
             renderAll();
@@ -246,31 +243,30 @@
         function renderSingle(idx) {
             const div = grid.children[idx];
             const status = hoursStatus[idx];
-            
             const darkLayer = div.querySelector('.layer-dark');
 
-            // Керуємо видимістю темного шару через clip-path
+            // Скидаємо стилі
+            darkLayer.style.display = 'none';
+            darkLayer.style.clipPath = 'none';
+
             if (status === 'on') {
-                // Світло: ховаємо темний шар повністю
-                darkLayer.style.clipPath = 'circle(0% at 50% 50%)'; // Або display: none, але clip-path анімується краще
-                darkLayer.style.display = 'none'; // Для надійності html2canvas
+                // Тільки світлий шар
+                darkLayer.style.display = 'none';
             } 
             else if (status === 'off') {
-                // Темно: показуємо темний шар повністю
+                // Тільки темний шар (перекриває світлий повністю)
                 darkLayer.style.display = 'flex';
-                darkLayer.style.clipPath = 'inset(0 0 0 0)';
+                darkLayer.style.clipPath = 'none'; // Повний показ
             }
             else if (status === 'start-half') {
-                // Вимикають о :30 (Світло -> Темно)
-                // Ліва частина біла, Права темна.
-                // Значить, темний шар обрізаємо зліва на 50%
+                // Світло -> Темно (00:00 - 00:30 світло, 00:30 - 01:00 темно)
+                // Темний шар має бути СПРАВА. Обрізаємо ліву половину темного шару.
                 darkLayer.style.display = 'flex';
                 darkLayer.style.clipPath = 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)';
             }
             else if (status === 'end-half') {
-                // Вмикають о :30 (Темно -> Світло)
-                // Ліва частина темна, Права біла.
-                // Значить, темний шар обрізаємо справа на 50%
+                // Темно -> Світло (00:00 - 00:30 темно, 00:30 - 01:00 світло)
+                // Темний шар має бути ЗЛІВА. Обрізаємо праву половину темного шару.
                 darkLayer.style.display = 'flex';
                 darkLayer.style.clipPath = 'polygon(0 0, 50% 0, 50% 100%, 0 100%)';
             }
@@ -340,7 +336,6 @@
         }
 
         function generateImageOutput() {
-            // scale: 3 для супер-чіткості
             html2canvas(captureTarget, {
                 scale: 3, 
                 backgroundColor: "#ffffff",
