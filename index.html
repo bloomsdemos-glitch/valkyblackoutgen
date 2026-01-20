@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Блекаут-Генератор 13.0</title>
+    <title>Блекаут-Генератор 14.0</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
@@ -11,21 +11,19 @@
             --card-bg: #ffffff;
             --text-main: #000000;
             --radius: 20px;
+            --btn-blue: #007aff;
+            --btn-gray: #e5e7eb;
 
-            /* === КОЛЬОРИ === */
+            /* === ЗМІННІ ТЕМИ (Default) === */
             --chart-bg: #ffffff;
-            
-            /* Світлий стан */
             --light-bg: #fbbf24;   /* Жовтий */
             --light-text: #1f2937; /* Темний текст */
-            
-            /* Темний стан */
             --dark-bg: #1f2937;    /* Графіт */
             --dark-text: #ffffff;  /* Білий текст */
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-app);
             color: var(--text-main);
             margin: 0;
@@ -40,7 +38,7 @@
             max-width: 500px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
         .card {
@@ -50,6 +48,9 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
+        h2 { margin: 0 0 15px 0; font-size: 20px; }
+
+        /* INPUTS */
         textarea {
             width: 100%;
             height: 80px;
@@ -61,15 +62,32 @@
             color: var(--text-main);
             box-sizing: border-box;
             resize: none;
+            font-size: 14px;
         }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            font-size: 14px;
+            font-weight: 600;
+            appearance: none; /* iOS fix */
+            color: var(--text-main);
+        }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
         button {
             flex: 1; padding: 14px; border: none; border-radius: 12px;
             font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s;
+            display: flex; justify-content: center; align-items: center; gap: 5px;
         }
-        .btn-primary { background: #007aff; color: white; }
-        .btn-secondary { background: #e5e7eb; color: var(--text-main); }
+        button:active { transform: scale(0.97); }
+        .btn-primary { background: var(--btn-blue); color: white; }
+        .btn-secondary { background: var(--btn-gray); color: var(--text-main); }
+        .btn-theme { background: #8e8e93; color: white; flex: 0 0 50px; } /* Кнопка теми */
 
         /* === ЗОНА ГЕНЕРАЦІЇ === */
         #captureTarget {
@@ -85,7 +103,7 @@
         }
 
         .header-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
-        .header-title { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1.1; }
+        .header-title { font-size: 26px; font-weight: 900; text-transform: uppercase; line-height: 1.1; color: var(--light-text); }
         .header-subtitle { font-size: 14px; color: #6b7280; font-weight: 500; margin-top: 6px; }
         .logo-fixed { height: 55px; width: auto; object-fit: contain; }
 
@@ -101,14 +119,10 @@
             overflow: hidden; 
             font-weight: 700;
             font-size: 22px;
-            background-color: var(--light-bg); /* Базовий колір */
-            /* ПРИБРАВ РАМКУ, щоб не було "жовтого виділення" і не з'їдало пікселі */
-            border: none; 
+            background-color: var(--light-bg); 
         }
 
-        /* --- СИСТЕМА ШАРІВ --- */
-        
-        /* Базовий шар (Світлий) */
+        /* Шари */
         .layer-base {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
@@ -118,64 +132,113 @@
             z-index: 1;
         }
 
-        /* Шар перекриття (Темний) */
         .layer-overlay {
-            position: absolute; 
-            top: 0; 
-            height: 100%;
-            overflow: hidden; 
-            z-index: 2;
+            position: absolute; top: 0; height: 100%;
+            overflow: hidden; z-index: 2;
             background-color: var(--dark-bg);
             color: var(--dark-text);
-            width: 0; 
-            display: none; 
+            width: 0; display: none; 
         }
 
-        /* Контент всередині перекриття */
         .overlay-content {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 100%; 
+            position: absolute; top: 0; height: 100%; width: 100%; 
             display: flex; align-items: center; justify-content: center;
-            gap: 8px;
-            white-space: nowrap;
+            gap: 8px; white-space: nowrap;
         }
 
-        /* ІКОНКИ */
-        /* Жорстко задаємо розмір, щоб вони були ідентичні */
-        .icon-svg { width: 22px; height: 22px; display: block; flex-shrink: 0; }
+        /* Іконки з currentColor */
+        .icon-svg { width: 22px; height: 22px; display: block; flex-shrink: 0; stroke: currentColor; }
         .time-text { display: block; white-space: nowrap; line-height: 1; margin-top: 2px; }
 
-        /* Футер */
+        /* Футер картинки */
         .footer-info {
             display: flex; align-items: center; gap: 8px;
             margin-top: 8px; padding-top: 18px;
-            border-top: 1px solid #f3f4f6;
+            border-top: 1px solid #e5e7eb;
             color: #6b7280;
         }
-        .info-icon { width: 20px; height: 20px; flex-shrink: 0; }
+        .info-icon { width: 20px; height: 20px; flex-shrink: 0; stroke: #6b7280; }
         .footer-text { font-size: 13px; font-weight: 500; line-height: 1.3; }
 
-        /* Результат */
-        #outputContainer {
-            display: none; background: var(--card-bg); padding: 15px;
-            border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center;
+        /* === БЛОК РЕЗУЛЬТАТУ === */
+        #outputContainer { display: none; animation: fadeIn 0.3s ease; }
+        
+        .result-image-wrapper {
+            position: relative;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-        #generatedImage { width: 100%; height: auto; border-radius: 12px; display: block; }
-        .output-hint { font-size: 14px; font-weight: 500; color: #6b7280; margin-top: 15px; }
-        .copy-area { display: none; margin-top: 20px; }
+        #generatedImage { width: 100%; height: auto; display: block; }
+
+        .btn-download {
+            background: #34c759; color: white; width: 100%; margin-bottom: 20px;
+        }
+
+        /* ONE-TAP COPY BLOCK */
+        .copy-block {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.2s all;
+            position: relative;
+        }
+        .copy-block:active { transform: scale(0.98); background: #e2e8f0; }
+        .copy-block.copied { background: #dcfce7; border-color: #22c55e; }
+        
+        .copy-content {
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            color: #334155;
+            pointer-events: none; /* щоб клік проходив крізь текст */
+        }
+        
+        .copy-hint {
+            position: absolute;
+            top: -10px; right: 10px;
+            background: #22c55e; color: white;
+            font-size: 10px; font-weight: 700;
+            padding: 4px 8px; border-radius: 10px;
+            opacity: 0; transition: 0.2s;
+        }
+        .copy-block.copied .copy-hint { opacity: 1; top: -12px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        
         <div class="card">
-            <h2 style="margin:0 0 15px 0; color:var(--text-main);">Генератор 13.0</h2>
-            <textarea id="rawText" placeholder="Встав текст графіку..."></textarea>
+            <h2>Налаштування</h2>
+            
+            <label style="font-size:12px; font-weight:700; color:#6b7280; text-transform:uppercase;">Заголовок</label>
+            <select id="titleSelect">
+                <option value="⚡️💡 ГРАФІК ВІДКЛЮЧЕНЬ">⚡️ Класичний: ГРАФІК ВІДКЛЮЧЕНЬ</option>
+                <option value="🎲 ГЕНЕРАТОР ВИПАДКОВИХ ЧИСЕЛ">🎲 Генератор випадкових чисел</option>
+                <option value="🎡 КОЛЕСО ФОРТУНИ">🎡 Колесо Фортуни</option>
+                <option value="🛸 НАУКОВО-ФАНТАСТИЧНИЙ ГРАФІК">🛸 Науково-фантастичний графік</option>
+                <option value="🔮 ХВИЛИНКА ГАЗЛАЙТИНГУ">🔮 Хвилинка газлайтингу</option>
+                <option value="🌌 ГРАФІК З ПАРАЛЕЛЬНОГО ВСЕСВІТУ">🌌 Графік з паралельного всесвіту</option>
+                <option value="🤡 КАРТИНКА ЗА ЗВИЧКОЮ">🤡 Картинка, яку ми постимо за звичкою</option>
+                <option value="💔 ГРАФІК (НЕ БЕРІТЬ БЛИЗЬКО ДО СЕРЦЯ)">💔 Графік (не беріть близько до серця)</option>
+                <option value="🧟‍♂️ ГРАФІК ВИЖИВАННЯ">🧟‍♂️ Графік виживання</option>
+                <option value="🎰 ЛОТЕРЕЯ ВІД ОБЛЕНЕРГО">🎰 Лотерея від Обленерго</option>
+            </select>
+
+            <textarea id="rawText" placeholder="Встав текст графіку (де є 1.2 і час)..."></textarea>
+            
             <div class="btn-group">
-                <button class="btn-primary" style="padding: 16px; font-size: 16px;" onclick="processDataAndGenerate()">⚡ Створити пост</button>
-                <button class="btn-secondary" onclick="clearAll()">❌ Скинути</button>
+                <button class="btn-primary" onclick="processDataAndGenerate()">⚡ Створити</button>
+                <button class="btn-theme" onclick="changeTheme()" title="Змінити тему">🎨</button>
+                <button class="btn-secondary" style="flex:0 0 50px;" onclick="clearAll()">❌</button>
             </div>
             <div id="debug" style="color:red; font-size:12px; margin-top:5px; text-align:center;"></div>
         </div>
@@ -201,39 +264,68 @@
             </div>
         </div>
 
-        <div id="outputContainer">
-            <img id="generatedImage" src="">
-            <p class="output-hint">☝️ Затисни картинку, щоб скопіювати</p>
-        </div>
+        <div id="outputContainer" class="card">
+            
+            <div class="result-image-wrapper">
+                <img id="generatedImage" src="">
+            </div>
+            
+            <button class="btn-download" onclick="downloadImage()">📥 Завантажити картинку</button>
 
-        <div class="card copy-area" id="copyCard">
-            <textarea id="resultText" style="height:120px;" readonly></textarea>
-            <button class="btn-secondary" style="width:100%; margin-top:10px;" onclick="copyText()">📋 Копіювати текст</button>
+            <label style="font-size:12px; font-weight:700; color:#6b7280; text-transform:uppercase; margin-bottom:5px; display:block;">Текст для посту (Натисни щоб скопіювати)</label>
+            <div class="copy-block" id="copyBlock" onclick="copyTextToClipboard()">
+                <div class="copy-hint">СКОПІЙОВАНО!</div>
+                <div class="copy-content" id="finalTextDisplay">Тут буде текст...</div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // ІКОНКИ (SVG)
-        
-        // 1. Bulb (для світлого фону) - темна
-        const iconBulb = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1.2 1.5-2.5 1.5-4a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 1.4.5 2.7 1.5 4 .7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
-        
-        // 2. Zap-Off (для темного фону) - біла
-        // Я трохи зменшив stroke-width до 2.2, щоб вона візуально була такою ж, як лампочка
-        const iconZapOff = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12.41 6.75 13 2 10.57 4.92"/><polyline points="18.57 12.91 21 10 15.66 10"/><polyline points="8 8 3 14 12 14 11 22 16 16"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
+        // === НАЛАШТУВАННЯ ТЕМ ===
+        const themes = [
+            { name: "Default", bg: "#ffffff", lBg: "#fbbf24", lTx: "#1f2937", dBg: "#1f2937", dTx: "#ffffff" },
+            { name: "High Contrast", bg: "#ffffff", lBg: "#e5e5e5", lTx: "#000000", dBg: "#000000", dTx: "#ffffff" }, // Чорно-біла
+            { name: "Mint", bg: "#f0fdf4", lBg: "#86efac", lTx: "#064e3b", dBg: "#1e293b", dTx: "#f0fdf4" }, // М'ятна
+            { name: "Cyber", bg: "#0f172a", lBg: "#22d3ee", lTx: "#000000", dBg: "#000000", dTx: "#22d3ee" }, // Кібер
+            { name: "Alert", bg: "#fff1f2", lBg: "#fecdd3", lTx: "#881337", dBg: "#881337", dTx: "#ffffff" }  // Червона
+        ];
+        let currentThemeIndex = 0;
+
+        // ІКОНКИ (stroke: currentColor - щоб міняли колір від теми)
+        const iconBulb = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1.2 1.5-2.5 1.5-4a6 6 0 0 0-6-6 6 6 0 0 0-6 6c0 1.4.5 2.7 1.5 4 .7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>`;
+        const iconZapOff = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="12.41 6.75 13 2 10.57 4.92"/><polyline points="18.57 12.91 21 10 15.66 10"/><polyline points="8 8 3 14 12 14 11 22 16 16"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`;
 
         const grid = document.getElementById('grid');
         const debug = document.getElementById('debug');
         const dateDisplay = document.getElementById('dateDisplay');
-        const resultTextArea = document.getElementById('resultText');
-        const copyCard = document.getElementById('copyCard');
+        const finalTextDisplay = document.getElementById('finalTextDisplay');
+        const copyBlock = document.getElementById('copyBlock');
         const captureTarget = document.getElementById('captureTarget');
         const outputContainer = document.getElementById('outputContainer');
         const generatedImage = document.getElementById('generatedImage');
+        const titleSelect = document.getElementById('titleSelect');
         
         let hoursStatus = new Array(24).fill('on'); 
         const clocks = ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚'];
+        let finalGeneratedText = ""; // Зберігаємо текст для копіювання
 
+        // === ФУНКЦІЇ ТЕМ ===
+        function changeTheme() {
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            applyTheme(themes[currentThemeIndex]);
+        }
+
+        function applyTheme(t) {
+            const r = document.documentElement.style;
+            r.setProperty('--chart-bg', t.bg);
+            r.setProperty('--light-bg', t.lBg);
+            r.setProperty('--light-text', t.lTx);
+            r.setProperty('--dark-bg', t.dBg);
+            r.setProperty('--dark-text', t.dTx);
+        }
+
+        // === ГЕНЕРАЦІЯ ===
         function initGrid() {
             grid.innerHTML = '';
             for (let i = 0; i < 24; i++) {
@@ -241,12 +333,10 @@
                 div.className = 'hour-box';
                 const timeStr = i.toString().padStart(2, '0') + ":00";
                 
-                // 1. БАЗОВИЙ ШАР (Світлий)
                 const layerBase = document.createElement('div');
                 layerBase.className = 'layer-base';
                 layerBase.innerHTML = `${iconBulb}<span class="time-text">${timeStr}</span>`;
                 
-                // 2. ШАР ПЕРЕКРИТТЯ (Темний)
                 const layerOverlay = document.createElement('div');
                 layerOverlay.className = 'layer-overlay';
                 
@@ -265,18 +355,15 @@
         function renderSingle(idx) {
             const div = grid.children[idx];
             const status = hoursStatus[idx];
-            
             const overlay = div.querySelector('.layer-overlay');
             const overlayContent = div.querySelector('.overlay-content');
             
-            // Скидаємо
             overlay.style.display = 'none';
             overlay.style.left = 'auto';
             overlay.style.right = 'auto';
             overlayContent.style.left = 'auto';
             overlayContent.style.right = 'auto';
 
-            // Отримуємо ширину плитки
             const boxWidth = div.offsetWidth + 'px';
             overlayContent.style.width = boxWidth;
 
@@ -290,16 +377,12 @@
                 overlayContent.style.left = '0';
             }
             else if (status === 'start-half') {
-                // Світло -> Темно (XX:30)
-                // Темний шар СПРАВА (50.5% щоб перекрити щілину)
                 overlay.style.display = 'block';
                 overlay.style.width = '50.5%'; 
                 overlay.style.right = '0';
                 overlayContent.style.right = '0';
             }
             else if (status === 'end-half') {
-                // Темно -> Світло (XX:30)
-                // Темний шар ЗЛІВА (50.5% щоб перекрити щілину)
                 overlay.style.display = 'block';
                 overlay.style.width = '50.5%';
                 overlay.style.left = '0';
@@ -308,27 +391,28 @@
         }
 
         function renderAll() { 
-            setTimeout(() => {
-                for(let i=0; i<24; i++) renderSingle(i);
-            }, 0);
+            setTimeout(() => { for(let i=0; i<24; i++) renderSingle(i); }, 0);
         }
 
         function processDataAndGenerate() {
             const text = document.getElementById('rawText').value;
+            const selectedTitle = titleSelect.value; // Беремо заголовок
             debug.textContent = "";
             
+            // Дата
             const dateRegex = /(\d{1,2})\s+(січня|лютого|березня|квітня|травня|червня|липня|серпня|вересня|жовтня|листопада|грудня)/i;
             const dateMatch = text.match(dateRegex);
             let dateStr = "СЬОГОДНІ";
             if (dateMatch) dateStr = dateMatch[0].toUpperCase();
-            dateDisplay.innerHTML = `ГРАФІК<br>НА ${dateStr}`;
+            
+            // Вставляємо заголовок в картинку
+            // Розбиваємо, щоб дата була на новому рядку, якщо заголовок довгий
+            dateDisplay.innerHTML = `${selectedTitle}<br>НА ${dateStr}`;
 
+            // Парсинг
             const regex = /(?:^|\n)\s*1\.2\s+([^\n]+)/;
             const match = text.match(regex);
-            if (!match) { 
-                debug.textContent = "Не бачу 1.2!"; 
-                return; 
-            }
+            if (!match) { debug.textContent = "Не бачу 1.2 у тексті!"; return; }
 
             hoursStatus.fill('on');
             let textIntervals = [];
@@ -346,18 +430,23 @@
             });
 
             renderAll();
-            resultTextArea.value = `⚡️💡 ГРАФІК ВІДКЛЮЧЕНЬ НА ${dateStr}\n\n${textIntervals.join('\n')}\n\nХарківобленерго`;
             
+            // Формуємо текст для копіювання
+            finalGeneratedText = `${selectedTitle} НА ${dateStr}\n\n${textIntervals.join('\n')}\n\nХарківобленерго`;
+            finalTextDisplay.textContent = finalGeneratedText;
+            
+            // Скидаємо стан кнопки копіювання
+            copyBlock.classList.remove('copied');
+
+            // Чекаємо рендер DOM, потім малюємо канвас
             setTimeout(generateImageOutput, 200); 
-            copyCard.style.display = 'block';
+            outputContainer.style.display = 'block';
         }
 
         function parseTime(t) { 
             const cleaned = t.replace(/[^\d:]/g, '');
             const parts = cleaned.split(':');
-            const h = parseInt(parts[0]) || 0;
-            const m = parts.length > 1 ? parseInt(parts[1]) : 0;
-            return { h: h, m: m }; 
+            return { h: parseInt(parts[0]) || 0, m: parts.length > 1 ? parseInt(parts[1]) : 0 }; 
         }
 
         function getClockEmoji(t) { 
@@ -374,16 +463,9 @@
             for (let h = 0; h < 24; h++) {
                 let hs = h * 60;
                 let he = (h + 1) * 60;
-                
-                if (hs >= s && he <= e) {
-                    hoursStatus[h] = 'off';
-                }
-                else if (s > hs && s < he) {
-                    hoursStatus[h] = start.m >= 30 ? 'start-half' : 'off';
-                }
-                else if (e > hs && e < he) {
-                    hoursStatus[h] = end.m >= 30 ? 'end-half' : 'on';
-                }
+                if (hs >= s && he <= e) hoursStatus[h] = 'off';
+                else if (s > hs && s < he) hoursStatus[h] = start.m >= 30 ? 'start-half' : 'off';
+                else if (e > hs && e < he) hoursStatus[h] = end.m >= 30 ? 'end-half' : 'on';
             }
         }
 
@@ -391,28 +473,49 @@
             document.getElementById('rawText').value = '';
             hoursStatus.fill('on');
             renderAll();
-            copyCard.style.display = 'none';
             outputContainer.style.display = 'none';
             dateDisplay.innerHTML = 'ГРАФІК<br>ВІДКЛЮЧЕНЬ';
         }
 
-        function copyText() {
-            const el = document.getElementById("resultText"); 
-            el.select(); 
-            el.setSelectionRange(0, 99999); 
-            navigator.clipboard.writeText(el.value);
+        // === COPY LOGIC ===
+        function copyTextToClipboard() {
+            if (!finalGeneratedText) return;
+            navigator.clipboard.writeText(finalGeneratedText).then(() => {
+                copyBlock.classList.add('copied');
+                // Через 2 сек зняти клас
+                setTimeout(() => copyBlock.classList.remove('copied'), 2000);
+            }).catch(err => {
+                alert("Помилка копіювання: " + err);
+            });
         }
 
+        // === IMAGE SAVING LOGIC ===
         function generateImageOutput() {
             html2canvas(captureTarget, {
                 scale: 3, 
-                backgroundColor: "#ffffff",
+                backgroundColor: null, // Прозорий, беремо з CSS
                 logging: false,
                 useCORS: true
             }).then(canvas => {
+                // Показуємо прев'ю
                 generatedImage.src = canvas.toDataURL('image/png');
-                outputContainer.style.display = 'block';
+                
+                // Зберігаємо canvas глобально або в змінну, щоб потім скачати
+                window.lastGeneratedCanvas = canvas;
             });
+        }
+
+        function downloadImage() {
+            if (!window.lastGeneratedCanvas) {
+                alert("Спочатку згенеруй графік!");
+                return;
+            }
+            const link = document.createElement('a');
+            link.download = `grafik_${Date.now()}.png`;
+            link.href = window.lastGeneratedCanvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         window.addEventListener('resize', renderAll);
