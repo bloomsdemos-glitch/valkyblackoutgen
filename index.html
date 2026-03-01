@@ -118,7 +118,7 @@
         #captureTarget {
             background-color: var(--chart-bg);
             padding: 35px;
-            border-radius: var(--radius);
+            border-radius: 0 !important;
             position: absolute; left: -9999px; top: 0; width: 540px; 
             box-sizing: border-box;
             /* Важливо для коректної генерації тіней на картинці */
@@ -168,7 +168,7 @@
         .copy-block {
             margin-top: 20px;
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 0 !important;
             background: var(--bg-app);
             box-shadow: 7px 7px 14px var(--neumorph-shadow-dark), 
                        -7px -7px 14px var(--neumorph-shadow-light);
@@ -381,11 +381,11 @@
             // Якщо обрано НЕ класику, додаємо "на [дата]" в кінець
             // Якщо класика - там форматування "ГРАФІК НА [ДАТА]"
             if (headerSelect.value === 'classic') {
-                return `${base} НА ${dateStr}`;
-            } else {
-                return `${base} на ${dateStr}`;
-            }
-        }
+        return `${base} НА ${dateStr} від Харківобленерго`;
+    } else {
+        return `${base} на ${dateStr}`;
+    }
+}
 
         function getClockEmoji(timeStr) {
             // Нормалізуємо час
@@ -497,7 +497,7 @@
 
         function updateCopyText() {
             const header = getHeaderTitle(lastDateStr);
-            finalTextDiv.textContent = `${header}\n\n${lastTextIntervals}\n\nХарківобленерго`;
+            finalTextDiv.textContent = `${header}\n\n${lastTextIntervals}\n\n👉🏻 t.me/valkyelectrifybot/electric`;
             copyBlock.classList.remove('copied');
             copyHint.textContent = "Тапни, щоб скопіювати текст";
             copyHint.style.color = "#007aff";
